@@ -17,6 +17,13 @@ uploaded_file = st.sidebar.file_uploader("Select CSV", type="csv")
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     st.write(df)
+    st.subheader('Overview of dataset')
+    overview = []
+    for col in df.columns:
+        row = [col, len(df[col]), str(df[col].dtype)]
+        overview.append(row)
+    
+    st.write(pd.DataFrame(overview, columns=['Column', 'Count', 'Dtype']))
     # Select model type
     model_options = ['Linear Regression', 'Logistic Regression', 'KNN', 'Random Forest', 'Decision Tree', 'Recommendation']
     model_type = st.sidebar.selectbox('Select model type', model_options)
@@ -99,6 +106,7 @@ if uploaded_file is not None:
 if st.sidebar.button('DONE'):
     df.reset_index(inplace=True, drop=True)
     st.title(model_type)
+    
 
     # Split data to train and test
     scaler = StandardScaler()
