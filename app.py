@@ -196,11 +196,11 @@ if st.sidebar.button('DONE'):
     if model_type == 'Decision Tree':
         st.subheader('Decision Tree Visualization')
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(20, 12))
-        plot_tree(model, ax=ax, feature_names=independent_variables, filled=True, impurity=False, precision=2,  rounded=True, fontsize=12)
+        plot_tree(model, ax=ax, feature_names=independent_variables, filled=True, impurity=False, precision=2,  rounded=True, class_names=list(map(str, df[target_variable].unique().tolist())))
         st.pyplot(fig)
         tree_text = export_text(model, feature_names=independent_variables, decimals=3, show_weights=True)
         st.text(tree_text)
-        
+
     if model_type == 'Random Forest':
         st.subheader('Random Forest Tree Visualization')
         # Draw a any tree from random forest
