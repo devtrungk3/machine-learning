@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics import roc_curve, precision_recall_curve, auc
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -158,6 +159,40 @@ if st.sidebar.button('DONE'):
         st.write(f"Precision: {precision:.2f} %")
         st.write(f"Recall: {recall:.2f} %")
         st.write(f"F1-score: {f1:.2f} %")
+        
+        # ROC and AUC
+        y_proba = model.predict_proba(X_test)[:, 1]
+        fpr, tpr, _ = roc_curve(y_test, y_proba)
+        roc_auc = auc(fpr, tpr)
+
+        st.subheader('Receiver Operating Characteristic (ROC)')
+        st.write(f"AUC: {roc_auc:.2f}")
+
+        plt.figure(figsize=(8, 6))
+        plt.plot(fpr, tpr, color='blue', lw=2, label='ROC curve (AUC = %0.2f)' % roc_auc)
+        plt.plot([0, 1], [0, 1], color='red', lw=2, linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver Operating Characteristic (ROC) Curve')
+        plt.legend(loc="lower right")
+        st.pyplot(plt.gcf())
+
+        # PR and AUC-PR
+        precision, recall, _ = precision_recall_curve(y_test, y_proba)
+        pr_auc = auc(recall, precision)
+
+        st.subheader('Precision-Recall Curve')
+        st.write(f"AUC-PR: {pr_auc:.2f}")
+
+        plt.figure(figsize=(8, 6))
+        plt.plot(recall, precision, color='blue', lw=2, label='PR curve (AUC-PR = %0.2f)' % pr_auc)
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+        plt.title('Precision-Recall Curve')
+        plt.legend(loc="lower right")
+        st.pyplot(plt.gcf())
 
         st.subheader('Confusion Matrix')
         conf_matrix = confusion_matrix(y_test, model.predict(X_test))
@@ -167,7 +202,7 @@ if st.sidebar.button('DONE'):
         plt.ylabel('True labels')
         plt.title('Confusion Matrix')
         st.pyplot(plt.gcf())
-    
+      
     elif model_type in ['Linear Regression', 'Logistic Regression'] and len(df[target_variable].unique()) > 2:
         st.subheader('Evaluation')
         mse = mean_squared_error(y_test, model.predict(X_test))
