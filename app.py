@@ -237,7 +237,8 @@ if st.sidebar.button('DONE'):
 
         
     # Visualization 
-    if visualization_var:
+    if len(visualization_var) == 2:
+        st.subheader(f'Visualization {visualization_var[0]} and {visualization_var[1]}')
         plt.figure(figsize=(8, 6))
         plt.scatter(df[visualization_var[0]], df[visualization_var[1]], color='green')
         plt.xlabel(visualization_var[0])
