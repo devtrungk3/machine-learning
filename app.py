@@ -36,7 +36,9 @@ if uploaded_file is not None:
             k = st.sidebar.number_input("Select K", 1, len(df))
             model = KNeighborsClassifier(n_neighbors=k)
         case 'Random Forest':
-            model = RandomForestClassifier(n_estimators=100)
+            n_estimators = st.sidebar.number_input("Select n_estimators", 1, 100)
+            model = RandomForestClassifier(n_estimators)
+            tree_index = st.sidebar.number_input("Select Tree Index", 0, n_estimators-1, step=1)
         case 'Decision Tree':
             model = DecisionTreeClassifier()
     target_variable = ''
@@ -213,13 +215,10 @@ if st.sidebar.button('DONE'):
         st.pyplot(fig)
         tree_text = export_text(model, feature_names=independent_variables, decimals=3, show_weights=True)
         st.text(tree_text)
-
     if model_type == 'Random Forest':
         st.subheader('Random Forest Tree Visualization')
-        # Draw a any tree from random forest
-        tree_index = st.sidebar.number_input("Select Tree Index", 0, len(model.estimators_)-1, step=1)
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(20, 12))
-        plot_tree(model.estimators_[tree_index], ax=ax, feature_names=independent_variables, filled=True)
+        plot_tree(model.estimators_[tree_index], ax=ax, feature_names=independent_variables, filled=True, class_names=list(map(str, df[target_variable].unique().tolist())))
         st.pyplot(fig)
         tree_text = export_text(model.estimators_[tree_index], feature_names=independent_variables)
         st.text(tree_text)
@@ -239,7 +238,7 @@ if st.sidebar.button('DONE'):
         
     # Visualization 
     if len(visualization_var) == 2:
-        st.subheader(f'Visualization {visualization_var[0]} and {visualization_var[1]}')
+        st.subheader(f'{visualization_var[0]} and {visualization_var[1]} Visualization')
         plt.figure(figsize=(8, 6))
         plt.scatter(df[visualization_var[0]], df[visualization_var[1]], color='green')
         plt.xlabel(visualization_var[0])
