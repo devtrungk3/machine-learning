@@ -143,7 +143,7 @@ if st.sidebar.button('DONE'):
         df_copy['similarity'] = similarity[0]
         similar = df_copy.sort_values(by='similarity', ascending=False)[:top_n+1]
         st.write(similar)
-
+        
     # Evaluation
     if model_type in ['Logistic Regression', 'KNN', 'Decision Tree', 'Random Forest']:
         accuracy = accuracy_score(y_test, model.predict(X_test)) * 100
@@ -179,7 +179,7 @@ if st.sidebar.button('DONE'):
         equation = f"{target_variable} = "
         for i, coef in enumerate(coefficients):
             equation += f"({coef:.2f} * {independent_variables[i]}) + "
-        equation += f"({intercept:.2f})"
+        equation += f"{intercept:.2f}"
         st.subheader('Equation')
         st.write(equation)
     elif model_type == 'Linear Regression':
@@ -188,15 +188,27 @@ if st.sidebar.button('DONE'):
         equation = f"{target_variable} = "
         for i, coef in enumerate(coefficients):
             equation += f"({coef:.2f} * {independent_variables[i]}) + "
-        equation += f"({intercept:.2f})"
+        equation += f"{intercept:.2f}"
         st.subheader('Equation')
         st.write(equation)
+        
+    # Draw scatter plot for linear regression
+    if model_type == 'Linear Regression' and len(independent_variables) == 1:
+        st.subheader('Scatter Plot for Linear Regression')
+        plt.figure(figsize=(8, 6))
+        plt.scatter(X_train, y_train, color='blue', label='Original data')
+        plt.plot(X_train, model.predict(X_train), color='red', linewidth=2, label='Regression line')
+        plt.xlabel(independent_variables[0])
+        plt.ylabel(target_variable)
+        plt.title(f'{independent_variables[0]} vs {target_variable}')
+        plt.legend()
+        st.pyplot(plt.gcf())
     
     # Draw tree
     if model_type == 'Decision Tree':
         st.subheader('Decision Tree Visualization')
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(20, 12))
-        plot_tree(model, ax=ax, feature_names=independent_variables, filled=True, impurity=False, precision=2,  rounded=True, class_names=list(map(str, df[target_variable].unique().tolist())))
+        plot_tree(model, ax=ax, feature_names=independent_variables, filled=True, precision=2,  rounded=True, class_names=list(map(str, df[target_variable].unique().tolist())))
         st.pyplot(fig)
         tree_text = export_text(model, feature_names=independent_variables, decimals=3, show_weights=True)
         st.text(tree_text)
