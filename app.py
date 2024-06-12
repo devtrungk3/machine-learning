@@ -145,7 +145,7 @@ if st.sidebar.button('DONE'):
         st.write(similar)
         
     # Evaluation
-    if model_type in ['Logistic Regression', 'KNN', 'Decision Tree', 'Random Forest']:
+    if model_type in ['Logistic Regression', 'KNN', 'Decision Tree', 'Random Forest'] and len(df[target_variable].unique()) == 2:
         accuracy = accuracy_score(y_test, model.predict(X_test)) * 100
         precision = precision_score(y_test, model.predict(X_test), average='weighted') * 100
         recall = recall_score(y_test, model.predict(X_test), average='weighted') * 100
@@ -165,7 +165,8 @@ if st.sidebar.button('DONE'):
         plt.ylabel('True labels')
         plt.title('Confusion Matrix')
         st.pyplot(plt.gcf())
-    elif model_type == 'Linear Regression':
+    
+    elif model_type in ['Linear Regression', 'Logistic Regression'] and len(df[target_variable].unique()) > 2:
         st.subheader('Evaluation')
         mse = mean_squared_error(y_test, model.predict(X_test))
         r2 = r2_score(y_test, model.predict(X_test))
@@ -182,7 +183,7 @@ if st.sidebar.button('DONE'):
         equation += f"{intercept:.2f}"
         st.subheader('Equation')
         st.write(equation)
-    elif model_type == 'Linear Regression':
+    if model_type == 'Linear Regression':
         coefficients = model.coef_
         intercept = model.intercept_
         equation = f"{target_variable} = "
